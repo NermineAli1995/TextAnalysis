@@ -23,7 +23,7 @@ import spacy
 from string import punctuation
 import docx2txt
 from difflib import SequenceMatcher
-
+nltk.download('punkt')
 #add list Labels:
 LABELS = ['job title','ville','missions','experience','contrat','formation']
 PATH_WORD= "./train_data/Word"
@@ -55,7 +55,7 @@ def convert_annotation(df):
             Parameters:
                     df (Dataframe): a Pandas.Dataframe
             Returns:
-                    binary_sum (str): Binary string of the sum of a and b
+                    train_data: List
     '''
     train_data = []
     for _, row in df.iterrows():
@@ -118,12 +118,13 @@ def convertTodoc(filepath, file):
         print('Info : file with same name of doc exists having docx extension, so we cant read it')
         text = ''
     return text
-
+#Returns the start and the end index of a content
 def find_index(content, text):
     start = content.find(text)
     end = len(text) + start
     return start, end
 
+#Extract information by seperator split
 def extract_info(content, t):
     couples = t.split(';;;')
     info = []
@@ -147,22 +148,8 @@ def convertion(df):
         entities = extract_info(content, row.text.lower())
         train_data.append((content, {"entities":entities}))
     print("conversion reussite")
+    print(train_data)
     return train_data
-
-train = pd.read_excel('./lib/train.xlsx', header=0)
-Train = convertion(train)
-
-# nlp.create_pipe works for built-ins that are registered with spaCy
-if 'ner' not in nlp.pipe_names:
-    ner = nlp.create_pipe('ner')
-    nlp.add_pipe(ner, last=True)
-
-# add labels
-for _, annotations in Train:
-    for ent in annotations.get('entities'):
-        for label in LABELS:
-            ner.add_label(label)
-other_pipes = [pipe for pipe in nlp.pipe_names if pipe != 'ner']
 
 # get names of other pipes to disable them during training
 def train(Train, nlp):    
@@ -207,8 +194,6 @@ def test(files):
                 df.loc[i_files]=ent.text         
     return df 
 
-TrainedModel = train(Train, nlp)
-
 def getAllCompetences(Dic):
     allCompetences=[]
     for cle, valeur in Dic.items():
@@ -225,12 +210,11 @@ def get_competences(file) :
     competencesCle = []
     l = []
     c = []
-    for index, row in output.iterrows():
+    for _, row in output.iterrows():
         ligne = row["MissionsCOMPETENCES"]
-        #listeCompetence=[]
         competences = []
         tokens = nltk.word_tokenize(str(ligne))
-        for cle, valeur in Dic.items():
+        for _, valeur in Dic.items():
             for i in range(0,len(valeur)-1):
                 listeCompetence = []
                 for j in range(0,len(tokens)-1):
@@ -259,3 +243,21 @@ def get_competences(file) :
     newdf = output.assign(**d)
     newdf[liste] = onehotencoding
     return newdf,competencesCle
+
+#Competence extraction pipeline
+train = pd.read_excel('./lib/train.xlsx', header=0)
+Train = convertion(train)
+
+# nlp.create_pipe works f# get names of other pipes to disable them during trainingor built-ins that are registered with spaCy
+if 'ner' not in nlp.pipe_names:
+    ner = nlp.create_pipe('ner')
+    nlp.add_pipe(ner, last=True)
+
+# add labels
+for _, annotations in Train:
+    for ent in annotations.get('entities'):
+        for label in LABELS:
+            ner.add_label(label)
+other_pipes = [pipe for pipe in nlp.pipe_names if pipe != 'ner']
+
+TrainedModel = train(Train, nlp)

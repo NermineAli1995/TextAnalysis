@@ -11,9 +11,8 @@ class uploadfile():
         self.delete_url = "delete/%s" % name
         self.delete_type = "DELETE"
 
-
     def is_image(self):
-        fileName, fileExtension = os.path.splitext(self.name.lower())
+        _, fileExtension = os.path.splitext(self.name.lower())
 
         if fileExtension in ['.jpg', '.png', '.jpeg', '.bmp']:
             return True
