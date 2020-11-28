@@ -1,0 +1,23 @@
+{% extends "base.html" %} {% block title %}Andex - Details {% endblock %} {% block page_content %}
+<div class="container">
+    <h1>Andex - IA & Cognition project</h1>
+    <br>
+    <blockquote>
+        <p> {{filename}} </p>
+        <h2>Mission : {{mission}}</h2>
+        <h3>{{competences}}</h3>
+    </blockquote>
+    <br>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Download as: </h3>
+        </div>
+        <div class="panel-body">
+            <ul>
+                <li><strong><a href="/as_csv/{{'.'.join([filename.split('.')[0],'csv'])}}">csv</a></strong></li>
+                <li><strong><a>json</a></strong></li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
