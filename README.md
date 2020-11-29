@@ -8,6 +8,6 @@ Read a formatted text document (pdf,work,html) related to job offers, extract th
   The developed functions are found in the class 'analyse' in the 'lib' fold, which is related the text analysis and creation of semantic search engine.
   
   
-  ##NB:
+  ## NB:
   Make sur to install the required librairies found in the 'requirement.txt'
   
